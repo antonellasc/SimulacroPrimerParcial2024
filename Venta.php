@@ -60,7 +60,7 @@ class Venta{
 
     public function __toString(){
         return "Número de venta: " . $this->getNumero() . "\n" . "Fecha de venta: " . $this->getFecha() . "\n" . "Cliente: \n" . $this->getObjCliente() . "\n" . 
-         "Motos: \n" . $this->getArrayMoto() . "\n" . "Precio final de la venta: " . $this->getPrecioFinal();
+         "Motos: \n" . $this->mostrarMotosVendidas() . "\n" . "Precio final de la venta: " . $this->getPrecioFinal();
         
     }
 
@@ -68,15 +68,29 @@ class Venta{
     public function incorporarMoto($objMoto){
         $coleccionMotos = $this->getArrayMoto();
         if(count($coleccionMotos) == 0){
-            $coleccionMotos = null;
+            $coleccionMotos = [];
         }
         $disponible = $objMoto->getEstadoMoto();
         if($disponible == true){
             $coleccionMotos[] = $objMoto;
             $this->setArrayMoto($coleccionMotos);
-            $precioAct = $objMoto->darPrecioVenta();
+            $precioAct = $objMoto->darPrecioVenta() + $this->getPrecioFinal();
             $this->setPrecioFinal($precioAct);
 
         }
     }
+
+    public function mostrarMotosVendidas(){
+        // Método para mostrar la colección de motos vendidas
+        $colDeMotos = $this->getArrayMoto();
+        $moto_nro = 0;
+        $unaCadenaMotosVendidas = "";
+        for($i = 0; $i < count($colDeMotos); $i++){
+            $moto_nro++;
+            $unaMoto = $colDeMotos[$i];
+            $unaCadenaMotosVendidas = $unaCadenaMotosVendidas . "Moto " . $moto_nro . ": \n" . $unaMoto . "\n";
+        }
+        return $unaCadenaMotosVendidas;
+    }
+
 }

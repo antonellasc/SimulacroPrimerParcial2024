@@ -62,9 +62,84 @@ class Empresa{
     public function __toString(){
         return "Denominación de la empresa: " . $this->getDenominacion() . "\n" .
         "Dirección: " . $this->getDireccion() . "\n" . 
-        "Clientes: " . $this->mostrarClientes() . "\n" . 
-        "Motos: " . $this->mostrarMotos() . "\n" . 
-        "Ventas: " . $this->mostrarVentas() . "\n";        
+        "Clientes: \n" . $this->mostrarClientes() . "\n" . 
+        "Motos: \n" . $this->mostrarMotos() . "\n" . 
+        "Ventas: \n" . $this->mostrarVentas() . "\n";        
+    }
+
+    
+    // Otras funciones solicitadas por el enunciado
+    public function retornarMoto($codigoMoto){
+        // Función que ingresado el código de una moto por parámetro, retorna la moto coincidente con tal código
+        $colDeMotos = $this->getArrayDeMotos();
+        $i = 0;
+        $indice = 0;
+        while($i < count($colDeMotos)){
+            if($codigoMoto == $colDeMotos[$i]->getCodigo()){
+                $indice = $i;
+            }
+            $i++;
+        }
+        $objMoto = $colDeMotos[$indice];
+        return $objMoto;
+    }
+
+    public function registrarVenta($colCodigosMoto, $objCliente){
+        // Setea una nueva colección de ventas que se realizan siempre y cuando cumpla con las restricciones y retorna el importe final de la venta
+        $coleccionVentas = $this->getArrayVentas();
+        $nro_venta = count($coleccionVentas) + 1;
+        $fechaActual = date("d/m/y");
+        $precioMoto = 0;
+        $precio_final = 0;
+        $i = 0;
+        $colMotosVenta = [];
+        $estadoCliente = $this->verEstadoCliente($objCliente);
+        $motoDisponible = false;
+        if($estadoCliente == true){
+            while($i < count($colCodigosMoto)){
+                $objMoto = $this->retornarMoto($colCodigosMoto[$i]);
+                $motoDisponible = $this->verDisponibilidadMoto($objMoto);
+                $precioMoto = $objMoto->darPrecioVenta();
+                if($colCodigosMoto[$i] == $objMoto->getCodigo() && $motoDisponible == true){
+                    $precio_final = $precio_final + $precioMoto;
+                    $colMotosVenta[] = $objMoto;
+            }
+                $i++;
+            }
+        }
+            if($precio_final > 0){
+                $objVenta = new Venta($nro_venta, $fechaActual, $objCliente, $colMotosVenta, $precio_final);
+                $coleccionVentas[] = $objVenta;
+                $this->setArrayVentas($coleccionVentas);
+
+            }
+            
+            return $precio_final;
+
+    }
+
+    public function retornarVentasXCliente($tipodoc, $nroDoc){
+        $coleccionDeVentas = $this->getArrayVentas();
+        $encontrado_1 = false;
+        $ventasCliente = [];
+        $ColClientes = $this->getArrayClientes();
+        foreach($ColClientes as $cliente){
+            if($cliente->getTipoDocu() === $tipodoc && $cliente->getNroDocu() === $nroDoc){
+                $encontrado_1 = true;
+                $objCliente = $cliente;
+            } else{
+                $encontrado_1 = false;
+            }
+        }
+        if($encontrado_1 == true){
+            foreach($coleccionDeVentas as $venta){
+            if($venta->getObjCliente() === $objCliente){
+                $ventasCliente[] = $venta;
+            }
+        }
+    }
+        
+        return $ventasCliente;
     }
 
     // Funciones adicionales
@@ -106,6 +181,40 @@ class Empresa{
             $unaCadenaMotos = $unaCadenaMotos . "Moto " . $moto_nro . ": \n" . $unaMoto . "\n";
         }
         return $unaCadenaMotos;
+    }
+
+    public function verEstadoCliente($objCliente){
+        $estaDadoAlta = false;
+        if($objCliente->getEstadoCliente() == "si"){
+            $estaDadoAlta;
+        } else{
+            $estaDadoAlta = true;
+        }
+        return $estaDadoAlta;
+    }
+
+    public function verDisponibilidadMoto($objMoto){
+        $estaDisponible = false;
+        if($objMoto->getEstadoMoto() == true){
+            $estaDisponible = true;
+        } else{
+            $estaDisponible = false;
+        }
+        return $estaDisponible;
+    }
+
+    public function mostrarVentasCliente($tipodoc, $nroDoc){
+        // Genera una cadena con los elementos del array Ventas de un determinado cliente
+        // $colVentasXCliente = $this->retornarVentasXCliente($tipodoc, $nroDoc);
+        $colVentasXCliente = $this->retornarVentasXCliente($tipodoc, $nroDoc);
+        $venta_nro = 0;
+        $unaCadenaVentasXCliente = "";
+        for($i = 0; $i < count($colVentasXCliente); $i++){
+            $venta_nro++;
+            $unaVentaCliente = $colVentasXCliente[$i];
+            $unaCadenaVentasXCliente = $unaCadenaVentasXCliente . "Venta " . $venta_nro . ": \n" . $unaVentaCliente . "\n";
+        }
+        return $unaCadenaVentasXCliente;
     }
 
 

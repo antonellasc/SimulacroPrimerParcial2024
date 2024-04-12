@@ -70,15 +70,20 @@ class Moto{
 
     // to String
     public function __toString(){
+        if($this->getEstadoMoto() == true){
+            $estado = "si";
+        } else{
+            $estado = "no";
+        }
         return "Código: " . $this->getCodigo() . "\n" . "Costo: " . $this->getCosto() . "\n" . "Año de fabricación: " . $this->getAnioFabricacion() . "\n" .
-        "Descripción: " . $this->getDescripcion() . "\n" . "Porcentaje de incremento anual: " . $this->getPorcentajeIncremento() . "\n" . "¿Está disponible a venta? " . $this->getEstadoMoto();
+        "Descripción: " . $this->getDescripcion() . "\n" . "Porcentaje de incremento anual: " . $this->getPorcentajeIncremento() . "\n" . "¿Está disponible a venta? " . $estado;
 
     }
 
     // Otros métodos/comportamiento
     public function aniosDesdeFabricacion(){
         // Función que retorna la cantidad de años que pasaron desde la fabricación de una moto.
-        $cantAnios = date('Y') - $this->getAnioFabricacion();
+        $cantAnios = intval(date('Y')) - $this->getAnioFabricacion();
         return $cantAnios;
     }
 
@@ -87,7 +92,7 @@ class Moto{
         // Función que retorna < 0 si la moto no está disponible a venta o de lo contrario, retorna el valor final por el cual se debe vender
         $precioVentaFinal = -1;
         if($this->getEstadoMoto() == true){
-            $precioVentaFinal = $this->getCosto() + $this->getCosto() * ($this->aniosDesdeFabricacion() * $this->getPorcentajeIncremento());
+            $precioVentaFinal = $this->getCosto() + $this->getCosto() * ($this->aniosDesdeFabricacion() * ($this->getPorcentajeIncremento() / 100));
         }
 
         return $precioVentaFinal;
