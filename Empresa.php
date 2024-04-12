@@ -118,22 +118,43 @@ class Empresa{
 
     }
 
+    // public function retornarVentasXCliente($tipodoc, $nroDoc){
+    //     $coleccionDeVentas = $this->getArrayVentas();
+    //     $encontrado_1 = false;
+    //     $ventasCliente = [];
+    //     $ColClientes = $this->getArrayClientes();
+    //     foreach($ColClientes as $cliente){
+    //         if($cliente->getTipoDocu() === $tipodoc && $cliente->getNroDocu() === $nroDoc){
+    //             $encontrado_1 = true;
+    //             $objCliente = $cliente;
+    //         } else{
+    //             $encontrado_1 = false;
+    //         }
+    //     }
+    //     if($encontrado_1 == true){
+    //         foreach($coleccionDeVentas as $venta){
+    //         if($venta->getObjCliente() === $objCliente){
+    //             array_push($ventasCliente, $venta);
+    //         }
+    //     }
+    // }
+        
+    //     return $ventasCliente;
+    // }
+
     public function retornarVentasXCliente($tipodoc, $nroDoc){
-        $coleccionDeVentas = $this->getArrayVentas();
-        $encontrado_1 = false;
+        $cliente_encontrado = null;
         $ventasCliente = [];
         $ColClientes = $this->getArrayClientes();
         foreach($ColClientes as $cliente){
             if($cliente->getTipoDocu() === $tipodoc && $cliente->getNroDocu() === $nroDoc){
-                $encontrado_1 = true;
-                $objCliente = $cliente;
-            } else{
-                $encontrado_1 = false;
+                $cliente_encontrado = $cliente;
             }
         }
-        if($encontrado_1 == true){
-            foreach($coleccionDeVentas as $venta){
-            if($venta->getObjCliente() === $objCliente){
+        if($cliente_encontrado !== null){
+            $ColVentas = $this->getArrayVentas();
+            foreach($ColVentas as $venta){
+            if($venta->getObjCliente() === $cliente_encontrado){
                 $ventasCliente[] = $venta;
             }
         }
@@ -203,15 +224,13 @@ class Empresa{
         return $estaDisponible;
     }
 
-    public function mostrarVentasCliente($tipodoc, $nroDoc){
+    public function mostrarVentasCliente($ventasCliente){
         // Genera una cadena con los elementos del array Ventas de un determinado cliente
-        // $colVentasXCliente = $this->retornarVentasXCliente($tipodoc, $nroDoc);
-        $colVentasXCliente = $this->retornarVentasXCliente($tipodoc, $nroDoc);
         $venta_nro = 0;
         $unaCadenaVentasXCliente = "";
-        for($i = 0; $i < count($colVentasXCliente); $i++){
+        for($i = 0; $i < count($ventasCliente); $i++){
             $venta_nro++;
-            $unaVentaCliente = $colVentasXCliente[$i];
+            $unaVentaCliente = $ventasCliente[$i];
             $unaCadenaVentasXCliente = $unaCadenaVentasXCliente . "Venta " . $venta_nro . ": \n" . $unaVentaCliente . "\n";
         }
         return $unaCadenaVentasXCliente;
